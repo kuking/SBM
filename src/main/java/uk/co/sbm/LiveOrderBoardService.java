@@ -3,28 +3,37 @@
  */
 package uk.co.sbm;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
+import io.vavr.collection.List;
+import io.vavr.collection.SortedSet;
+import io.vavr.collection.TreeSet;
+
+import java.math.BigDecimal;
 
 
 public class LiveOrderBoardService {
 
-    //XXX no-multi-threaded
-    private Set<Order> orderBook = new TreeSet<>(Comparator.comparing(Order::getPrice));
+    // immutable Set using VAVR
+    private SortedSet<Order> orderBook = TreeSet.empty(Order.NATURAL_ORDER);
 
     public boolean register(final Order order) {
-        return orderBook.add(order.normalized());
-    }
-
-
-    public boolean someLibraryMethod() {
+        if (orderBook.contains(order)) return false;
+        this.orderBook = orderBook.add(order.normalized());
         return true;
     }
 
-    public List<Order> summary(Order.Type type) {
-        return orderBook.stream().filter(o -> o.getType().equals(type)).collect(Collectors.toList());
+    public boolean cancel(final Order order) {
+        if (!orderBook.contains(order)) return false;
+        this.orderBook = orderBook.remove(order);
+        return true;
+    }
+
+    public List<SummaryEntry> summary(Order.Type type) {
+        if (type == null) return List.of();
+        return orderBook
+                .filter(o -> type.equals(o.getType()))
+                .toList()
+                .groupBy(Order::getPrice)
+                .map(t -> new SummaryEntry(t._2.map(Order::getQuantity).reduce(BigDecimal::add), t._1).normalized())
+                .toList();
     }
 }

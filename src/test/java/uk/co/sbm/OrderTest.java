@@ -5,8 +5,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class OrderTest {
 
@@ -20,12 +19,12 @@ public class OrderTest {
 
     @Test
     public void bigDecimalIntricacies_differentDecimalPlacesInBigDecimal() {
-        assertNotEquals(left, right);
+        assertThat(left).isNotEqualTo(right);
     }
 
     @Test
     public void bigDecimalsCanBeComparedAfterNormalized() {
-        assertEquals(left.normalized(), right.normalized());
+        assertThat(left.normalized()).isEqualTo(right.normalized());
     }
 
 }

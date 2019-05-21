@@ -6,11 +6,18 @@ import lombok.NonNull;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 
 @Data
 @AllArgsConstructor
 public class Order {
     public enum Type {BUY, SELL}
+
+    static public Comparator<Order> NATURAL_ORDER =
+            Comparator.comparing(Order::getType)
+                    .thenComparing(Order::getPrice)
+                    .thenComparing(Order::getQuantity)
+                    .thenComparing(Order::getUserId);
 
     @NonNull
     final private String userId;
@@ -31,4 +38,5 @@ public class Order {
                 price.setScale(2, RoundingMode.HALF_EVEN),
                 type);
     }
+
 }
