@@ -114,8 +114,9 @@ public class LiveOrderBoardServiceTest {
         underTest.register(o);
 
         assertThat(underTest.cancel(o)).isTrue();
-        assertThat(underTest.cancel(o)).isFalse();
         assertThat(underTest.summary(Order.Type.BUY)).isEmpty();
+
+        assertThat(underTest.cancel(o)).isFalse();
     }
 
     // ------------------------------------------------------------------------------------------------------
