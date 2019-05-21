@@ -86,17 +86,18 @@ public class LiveOrderBoardServiceTest {
     @Test
     public void getSummary_mergeComplex() {
         for (int i = 0; i < 100; i++) {
-            underTest.register(givenBuyOrder("user 1", "" + i, "" + i));
-            underTest.register(givenBuyOrder("user 2", "" + i, "" + i));
-            underTest.register(givenSellOrder("" + i, "" + i));
+            String iAsS = "" + i;
+            underTest.register(givenBuyOrder("user 1", iAsS, iAsS));
+            underTest.register(givenBuyOrder("user 2", iAsS, iAsS));
+            underTest.register(givenSellOrder(iAsS, iAsS));
         }
 
         List<SummaryEntry> buys = underTest.summary(Order.Type.BUY);
         List<SummaryEntry> sells = underTest.summary(Order.Type.SELL);
 
-        assertThat(buys).size().isEqualTo(100);
+        assertThat(buys).size().isEqualTo(100); // buys are joined
         assertThat(sells).size().isEqualTo(100);
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 100; i++) {
             assertThat(buys).contains(new SummaryEntry(new BigDecimal(i * 2), new BigDecimal(i)).normalized());
             assertThat(sells).contains(new SummaryEntry(new BigDecimal(i), new BigDecimal(i)).normalized());
         }
@@ -116,7 +117,6 @@ public class LiveOrderBoardServiceTest {
         assertThat(underTest.cancel(o)).isFalse();
         assertThat(underTest.summary(Order.Type.BUY)).isEmpty();
     }
-
 
     // ------------------------------------------------------------------------------------------------------
 
